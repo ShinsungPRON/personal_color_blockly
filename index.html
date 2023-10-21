@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Resizable Blockly (Part 2)</title>
+  <script src="./node_modules/blockly/blockly_compressed.js"></script>
+  <script src="./node_modules/blockly/blocks_compressed.js"></script>
+  <script src="./node_modules/blockly/msg/ko.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    table {
+      height: 100%;
+      width: 100%;
+    }
+    #blocklyArea {
+      height: 99%;
+    }
+  </style>
+</head>
+<body>
+<table>
+  <tr>
+    <td>
+      <img src="resources/logo.png" height="50">
+    </td>
+  </tr>
+  <tr>
+    <td id="blocklyArea">
+    </td>
+  </tr>
+</table>
+
+<div id="blocklyDiv" style="position: absolute"></div>
+
+<script>
+  // javascript.javascriptGenerator.forBlock['whitebalance'] = function(block, generator) {
+  //   var value_image = generator.valueToCode(block, 'image', javascript.Order.ATOMIC);
+  //   // TODO: Assemble javascript into code variable.
+  //   var code = '...';
+  //   // TODO: Change ORDER_NONE to the correct strength.
+  //   return [code, Blockly.javascript.ORDER_NONE];
+  // };
+  //
+  // javascript.javascriptGenerator.forBlock['take_picture'] = function(block, generator) {
+  //   // TODO: Assemble javascript into code variable.
+  //   var code = '...';
+  //   // TODO: Change ORDER_NONE to the correct strength.
+  //   return [code, Blockly.javascript.ORDER_NONE];
+  // };
+  //
+  // javascript.javascriptGenerator.forBlock['get_face_part'] = function(block, generator) {
+  //   var dropdown_part = block.getFieldValue('PART');
+  //   var value_image = generator.valueToCode(block, 'image', javascript.Order.ATOMIC);
+  //   // TODO: Assemble javascript into code variable.
+  //   var code = '...';
+  //   // TODO: Change ORDER_NONE to the correct strength.
+  //   return [code, Blockly.javascript.ORDER_NONE];
+  // };
+  //
+  // javascript.javascriptGenerator.forBlock['analyze_color'] = function(block, generator) {
+  //   var value_cheek = generator.valueToCode(block, 'CHEEK', javascript.Order.ATOMIC);
+  //   var value_eye = generator.valueToCode(block, 'EYE', javascript.Order.ATOMIC);
+  //   var value_eyebrow = generator.valueToCode(block, 'EYEBROW', javascript.Order.ATOMIC);
+  //   // TODO: Assemble javascript into code variable.
+  //   var code = '...\n';
+  //   return code;
+  // };
+  //
+  // javascript.javascriptGenerator.forBlock['show_result'] = function(block, generator) {
+  //   // TODO: Assemble javascript into code variable.
+  //   var code = '...\n';
+  //   return code;
+  // };
+  //
+  // javascript.javascriptGenerator.forBlock['when_start_pressed'] = function(block, generator) {
+  //   // TODO: Assemble javascript into code variable.
+  //   var code = '...\n';
+  //   return code;
+  // };
+
+  let customblocks =           [{
+    "type": "whitebalance",
+    "message0": "화이트밸런스 조정 %1 이미지 %2",
+    "args0": [
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_value",
+        "name": "image"
+      }
+    ],
+    "output": null,
+    "colour": 230,
+    "tooltip": "이미지의 화이트밸런스를 조정합니다.",
+    "helpUrl": ""
+  },
+    {
+      "type": "take_picture",
+      "message0": "웹캠에서 사진찍기",
+      "output": null,
+      "colour": 230,
+      "tooltip": "웹캠에서 사진을 찍습니다.",
+      "helpUrl": ""
+    },
+    {
+      "type": "get_face_part",
+      "message0": "이미지에서 %1 부분 추출 %2 이미지 %3",
+      "args0": [
+        {
+          "type": "field_dropdown",
+          "name": "PART",
+          "options": [
+            [
+              "뺨",
+              "CHEEK"
+            ],
+            [
+              "눈",
+              "EYE"
+            ],
+            [
+              "눈썹",
+              "EYEBROW"
+            ]
+          ]
+        },
+        {
+          "type": "input_dummy"
+        },
+        {
+          "type": "input_value",
+          "name": "image"
+        }
+      ],
+      "output": null,
+      "colour": 230,
+      "tooltip": "",
+      "helpUrl": ""
+    },
+    {
+      "type": "analyze_color",
+      "message0": "퍼스널컬러 분석 %1 뺨 %2 눈 %3 눈썹 %4",
+      "args0": [
+        {
+          "type": "input_dummy"
+        },
+        {
+          "type": "input_value",
+          "name": "CHEEK",
+          "align": "RIGHT"
+        },
+        {
+          "type": "input_value",
+          "name": "EYE",
+          "align": "RIGHT"
+        },
+        {
+          "type": "input_value",
+          "name": "EYEBROW",
+          "align": "RIGHT"
+        }
+      ],
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": 230,
+      "tooltip": "퍼스널컬러를 분석합니다. 뺨, 눈, 눈썹에 추출한 이미지가 들어갑니다.",
+      "helpUrl": ""
+    },
+    {
+      "type": "show_result",
+      "message0": "결과 확인",
+      "previousStatement": null,
+      "colour": 230,
+      "tooltip": "결과를 확인합니다.",
+      "helpUrl": ""
+    },
+    {
+      "type": "when_start_pressed",
+      "message0": "시작 버튼이 눌리면",
+      "nextStatement": null,
+      "colour": 120,
+      "tooltip": "",
+      "helpUrl": ""
+    }]
+  let toolbox = {
+    'kind': 'categoryToolbox',
+    'contents': [
+      {
+        'kind': 'category',
+        'name': '논리',
+        'categorystyle': 'logic_category',
+        'contents': [
+          {
+            'type': 'controls_if',
+            'kind': 'block',
+          },
+          {
+            'type': 'logic_compare',
+            'kind': 'block',
+            'fields': {
+              'OP': 'EQ',
+            },
+          },
+          {
+            'type': 'logic_operation',
+            'kind': 'block',
+            'fields': {
+              'OP': 'AND',
+            },
+          },
+          {
+            'type': 'logic_negate',
+            'kind': 'block',
+          },
+          {
+            'type': 'logic_boolean',
+            'kind': 'block',
+            'fields': {
+              'BOOL': 'TRUE',
+            },
+          },
+          {
+            'type': 'logic_ternary',
+            'kind': 'block',
+          },
+        ],
+      },
+      {
+        'kind': 'category',
+        'name': '반복',
+        'categorystyle': 'loop_category',
+        'contents': [
+          {
+            'type': 'controls_repeat_ext',
+            'kind': 'block',
+            'inputs': {
+              'TIMES': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 10,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'controls_whileUntil',
+            'kind': 'block',
+            'fields': {
+              'MODE': 'WHILE',
+            },
+          },
+          {
+            'type': 'controls_for',
+            'kind': 'block',
+            'fields': {
+              'VAR': {
+                'name': 'i',
+              },
+            },
+            'inputs': {
+              'FROM': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+              'TO': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 10,
+                  },
+                },
+              },
+              'BY': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'controls_forEach',
+            'kind': 'block',
+            'fields': {
+              'VAR': {
+                'name': 'j',
+              },
+            },
+          },
+          {
+            'type': 'controls_flow_statements',
+            'kind': 'block',
+            'fields': {
+              'FLOW': 'BREAK',
+            },
+          },
+        ],
+      },
+      {
+        'kind': 'category',
+        'name': '연산',
+        'categorystyle': 'math_category',
+        'contents': [
+          {
+            'type': 'math_number',
+            'kind': 'block',
+            'fields': {
+              'NUM': 123,
+            },
+          },
+          {
+            'type': 'math_arithmetic',
+            'kind': 'block',
+            'fields': {
+              'OP': 'ADD',
+            },
+            'inputs': {
+              'A': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+              'B': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_single',
+            'kind': 'block',
+            'fields': {
+              'OP': 'ROOT',
+            },
+            'inputs': {
+              'NUM': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 9,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_trig',
+            'kind': 'block',
+            'fields': {
+              'OP': 'SIN',
+            },
+            'inputs': {
+              'NUM': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 45,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_constant',
+            'kind': 'block',
+            'fields': {
+              'CONSTANT': 'PI',
+            },
+          },
+          {
+            'type': 'math_number_property',
+            'kind': 'block',
+            'fields': {
+              'PROPERTY': 'EVEN',
+            },
+            'inputs': {
+              'NUMBER_TO_CHECK': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 0,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_round',
+            'kind': 'block',
+            'fields': {
+              'OP': 'ROUND',
+            },
+            'inputs': {
+              'NUM': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 3.1,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_on_list',
+            'kind': 'block',
+            'fields': {
+              'OP': 'SUM',
+            },
+          },
+          {
+            'type': 'math_modulo',
+            'kind': 'block',
+            'inputs': {
+              'DIVIDEND': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 64,
+                  },
+                },
+              },
+              'DIVISOR': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 10,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_constrain',
+            'kind': 'block',
+            'inputs': {
+              'VALUE': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 50,
+                  },
+                },
+              },
+              'LOW': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+              'HIGH': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 100,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_random_int',
+            'kind': 'block',
+            'inputs': {
+              'FROM': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+              'TO': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 100,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'math_random_float',
+            'kind': 'block',
+          },
+          {
+            'type': 'math_atan2',
+            'kind': 'block',
+            'inputs': {
+              'X': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+              'Y': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 1,
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      {
+        'kind': 'category',
+        'name': '텍스트',
+        'categorystyle': 'text_category',
+        'contents': [
+          {
+            'type': 'text',
+            'kind': 'block',
+            'fields': {
+              'TEXT': '',
+            },
+          },
+          {
+            'type': 'text_multiline',
+            'kind': 'block',
+            'fields': {
+              'TEXT': '',
+            },
+          },
+          {
+            'type': 'text_join',
+            'kind': 'block',
+          },
+          {
+            'type': 'text_append',
+            'kind': 'block',
+            'fields': {
+              'name': 'item',
+            },
+            'inputs': {
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_length',
+            'kind': 'block',
+            'inputs': {
+              'VALUE': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': 'abc',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_isEmpty',
+            'kind': 'block',
+            'inputs': {
+              'VALUE': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_indexOf',
+            'kind': 'block',
+            'fields': {
+              'END': 'FIRST',
+            },
+            'inputs': {
+              'VALUE': {
+                'block': {
+                  'type': 'variables_get',
+                  'fields': {
+                    'VAR': {
+                      'name': 'text',
+                    },
+                  },
+                },
+              },
+              'FIND': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': 'abc',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_charAt',
+            'kind': 'block',
+            'fields': {
+              'WHERE': 'FROM_START',
+            },
+            'inputs': {
+              'VALUE': {
+                'block': {
+                  'type': 'variables_get',
+                  'fields': {
+                    'VAR': {
+                      'name': 'text',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_getSubstring',
+            'kind': 'block',
+            'fields': {
+              'WHERE1': 'FROM_START',
+              'WHERE2': 'FROM_START',
+            },
+            'inputs': {
+              'STRING': {
+                'block': {
+                  'type': 'variables_get',
+                  'fields': {
+                    'VAR': {
+                      'name': 'text',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_changeCase',
+            'kind': 'block',
+            'fields': {
+              'CASE': 'UPPERCASE',
+            },
+            'inputs': {
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': 'abc',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_trim',
+            'kind': 'block',
+            'fields': {
+              'MODE': 'BOTH',
+            },
+            'inputs': {
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': 'abc',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_count',
+            'kind': 'block',
+            'inputs': {
+              'SUB': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_replace',
+            'kind': 'block',
+            'inputs': {
+              'FROM': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+              'TO': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_reverse',
+            'kind': 'block',
+            'inputs': {
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': '',
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            'type': 'text_print',
+            'kind': 'block',
+            'inputs': {
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': 'abc',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'text_prompt_ext',
+            'kind': 'block',
+            'fields': {
+              'TYPE': 'TEXT',
+            },
+            'inputs': {
+              'TEXT': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': 'abc',
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      {
+        'kind': 'category',
+        'name': '리스트',
+        'categorystyle': 'list_category',
+        'contents': [
+          {
+            'type': 'lists_create_with',
+            'kind': 'block',
+          },
+          {
+            'type': 'lists_create_with',
+            'kind': 'block',
+          },
+          {
+            'type': 'lists_repeat',
+            'kind': 'block',
+            'inputs': {
+              'NUM': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 5,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'lists_length',
+            'kind': 'block',
+          },
+          {
+            'type': 'lists_isEmpty',
+            'kind': 'block',
+          },
+          {
+            'type': 'lists_indexOf',
+            'kind': 'block',
+
+            'fields': {
+              'END': 'FIRST',
+            },
+            'inputs': {
+              'VALUE': {
+                'block': {
+                  'type': 'variables_get',
+                  'fields': {
+                    'VAR': {
+                      'name': 'list',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'lists_getIndex',
+            'kind': 'block',
+            'fields': {
+              'MODE': 'GET',
+              'WHERE': 'FROM_START',
+            },
+            'inputs': {
+              'VALUE': {
+                'block': {
+                  'type': 'variables_get',
+                  'fields': {
+                    'VAR': {
+                      'name': 'list',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'lists_setIndex',
+            'kind': 'block',
+            'fields': {
+              'MODE': 'SET',
+              'WHERE': 'FROM_START',
+            },
+            'inputs': {
+              'LIST': {
+                'block': {
+                  'type': 'variables_get',
+                  'fields': {
+                    'VAR': {
+                      'name': 'list',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'lists_getSublist',
+            'kind': 'block',
+            'fields': {
+              'WHERE1': 'FROM_START',
+              'WHERE2': 'FROM_START',
+            },
+            'inputs': {
+              'LIST': {
+                'block': {
+                  'type': 'variables_get',
+                  'fields': {
+                    'VAR': {
+                      'name': 'list',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'lists_split',
+            'kind': 'block',
+
+            'fields': {
+              'MODE': 'SPLIT',
+            },
+            'inputs': {
+              'DELIM': {
+                'shadow': {
+                  'type': 'text',
+                  'fields': {
+                    'TEXT': ',',
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'lists_sort',
+            'kind': 'block',
+
+            'fields': {
+              'TYPE': 'NUMERIC',
+              'DIRECTION': '1',
+            },
+          },
+          {
+            'type': 'lists_reverse',
+            'kind': 'block',
+          },
+        ],
+      },
+      {
+        'kind': 'category',
+        'categorystyle': 'colour_category',
+        'name': '색상',
+        'contents': [
+          {
+            'type': 'colour_picker',
+            'kind': 'block',
+            'fields': {
+              'COLOUR': '#ff0000',
+            },
+          },
+          {
+            'type': 'colour_random',
+            'kind': 'block',
+          },
+          {
+            'type': 'colour_rgb',
+            'kind': 'block',
+            'inputs': {
+              'RED': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 100,
+                  },
+                },
+              },
+              'GREEN': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 50,
+                  },
+                },
+              },
+              'BLUE': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 0,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'type': 'colour_blend',
+            'kind': 'block',
+            'inputs': {
+              'COLOUR1': {
+                'shadow': {
+                  'type': 'colour_picker',
+                  'fields': {
+                    'COLOUR': '#ff0000',
+                  },
+                },
+              },
+              'COLOUR2': {
+                'shadow': {
+                  'type': 'colour_picker',
+                  'fields': {
+                    'COLOUR': '#3333ff',
+                  },
+                },
+              },
+              'RATIO': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 0.5,
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      {
+        'kind': 'sep',
+      },
+      {
+        'kind': 'category',
+        'name': '변수',
+        'custom': 'VARIABLE',
+        'categorystyle': 'variable_category',
+
+      },
+      {
+        'kind': 'category',
+        'name': '함수',
+        'custom': 'PROCEDURE',
+        'categorystyle': 'procedure_category',
+      },
+      {
+        'kind': 'category',
+        'name': '퍼스널컬러 도구',
+        'categorystyle': 'math_category',
+        'contents': [
+          {
+            'type': 'when_start_pressed',
+            'kind': 'block'
+          },
+          {
+            'type': 'take_picture',
+            'kind': 'block'
+          },
+          {
+            'type': 'whitebalance',
+            'kind': "block"
+          },
+          {
+            'type': 'get_face_part',
+            'kind': 'block'
+          },
+          {
+            'type': 'analyze_color',
+            'kind': 'block'
+          },
+          {
+            'type': 'show_result',
+            'kind': 'block'
+          }
+        ]
+      }
+    ],
+  };
+  var blocklyArea = document.getElementById('blocklyArea');
+  var blocklyDiv = document.getElementById('blocklyDiv');
+  var demoWorkspace = Blockly.inject(blocklyDiv,
+          {media: './node_modules/blockly/media/',
+            toolbox: toolbox});
+  Blockly.defineBlocksWithJsonArray(customblocks)
+
+  var onresize = function(e) {
+    // Compute the absolute coordinates and dimensions of blocklyArea.
+    var element = blocklyArea;
+    var x = 0;
+    var y = 0;
+    do {
+      x += element.offsetLeft;
+      y += element.offsetTop;
+      element = element.offsetParent;
+    } while (element);
+    // Position blocklyDiv over blocklyArea.
+    blocklyDiv.style.left = x + 'px';
+    blocklyDiv.style.top = y + 'px';
+    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    Blockly.svgResize(demoWorkspace);
+
+    console.log('resize');
+  };
+  window.addEventListener('resize', onresize, false);
+  onresize();
+</script>
+</body>
+</html>
