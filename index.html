@@ -2,10 +2,11 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Blockly Demo: Resizable Blockly (Part 2)</title>
+  <title>프론 퍼스널컬러 코딩</title>
   <script src="./node_modules/blockly/blockly_compressed.js"></script>
   <script src="./node_modules/blockly/blocks_compressed.js"></script>
   <script src="./node_modules/blockly/msg/ko.js"></script>
+  <script src="main.js"></script>
   <style>
     html, body {
       height: 100%;
@@ -33,11 +34,14 @@
 <table>
   <tr>
     <td>
-      <img src="resources/logo.png" height="50">
+      <img src="resources/logo.png" height="50px">
+    </td>
+    <td style="text-align: right">
+      <a href="#"><img src="resources/run.png" height="50px" class="startButton" onclick="run()"></a>
     </td>
   </tr>
   <tr>
-    <td id="blocklyArea">
+    <td id="blocklyArea" colspan="2">
     </td>
   </tr>
 </table>
@@ -102,8 +106,9 @@
         "name": "image"
       }
     ],
-    "output": null,
     "colour": 230,
+    "previousStatement": null,
+    "nextStatement": null,
     "tooltip": "이미지의 화이트밸런스를 조정합니다.",
     "helpUrl": ""
   },
@@ -1083,16 +1088,23 @@
   };
   var blocklyArea = document.getElementById('blocklyArea');
   var blocklyDiv = document.getElementById('blocklyDiv');
-  var demoWorkspace = Blockly.inject(blocklyDiv,
-          {media: './node_modules/blockly/media/',
-            toolbox: toolbox});
+  var demoWorkspace = Blockly.inject(blocklyDiv, {
+    media: './node_modules/blockly/media/',
+    toolbox: toolbox,
+    grid: {
+      spacing: 20,
+      length: 3,
+      color: '#ccc',
+      snap: true
+    }
+  });
   Blockly.defineBlocksWithJsonArray(customblocks)
 
-  var onresize = function(e) {
+  let onresize = function(e) {
     // Compute the absolute coordinates and dimensions of blocklyArea.
-    var element = blocklyArea;
-    var x = 0;
-    var y = 0;
+    let element = blocklyArea;
+    let x = 0;
+    let y = 0;
     do {
       x += element.offsetLeft;
       y += element.offsetTop;
